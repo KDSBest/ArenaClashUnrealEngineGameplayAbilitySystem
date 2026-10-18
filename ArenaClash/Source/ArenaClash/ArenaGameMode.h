@@ -11,4 +11,10 @@ class ARENACLASH_API AArenaGameMode : public AGameModeBase
 
 public:
 	AArenaGameMode();
+
+	void RequestRespawn(AController* Controller);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	float RespawnDelay = 5.f;
 };

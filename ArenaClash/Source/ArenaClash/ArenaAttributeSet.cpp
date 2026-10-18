@@ -1,6 +1,8 @@
 #include "ArenaAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
+#include "ArenaCharacterBase.h"
+#include "ArenaGameplayTags.h"
 
 UArenaAttributeSet::UArenaAttributeSet()
 {
@@ -49,16 +51,24 @@ void UArenaAttributeSet::PostGameplayEffectExecute(
 		const float Damage = GetIncomingDamage();
 		SetIncomingDamage(0.f);
 
-		if (Damage > 0.f)
+		UAbilitySystemComponent* TargetASC = &Data.Target;
+		if (Damage <= 0.f ||
+			TargetASC->HasMatchingGameplayTag(ArenaTags::State_Dead))
 		{
-			const float NewHealth = GetHealth() - Damage;
-			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+			return;
+		}
 
-			if (GetHealth() <= 0.f)
+		SetHealth(FMath::Clamp(GetHealth() - Damage, 0.f, GetMaxHealth()));
+
+		if (GetHealth() <= 0.f)
+		{
+			AActor* Killer =
+				Data.EffectSpec.GetContext().GetOriginalInstigator();
+
+			if (AArenaCharacterBase* Victim = Cast<AArenaCharacterBase>(
+					TargetASC->GetAvatarActor()))
 			{
-				// Death is handled in Chapter 13.
-				UE_LOG(LogTemp, Log, TEXT("%s died"),
-					   *GetOwningActor()->GetName());
+				Victim->Die(Killer);
 			}
 		}
 		return;

@@ -5,6 +5,7 @@
 #include "InputActionValue.h"
 #include "AbilitySystemComponent.h"
 #include "ArenaPlayerState.h"
+#include "ArenaGameMode.h"
 
 AArenaPlayerCharacter::AArenaPlayerCharacter()
 {
@@ -22,8 +23,13 @@ void AArenaPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// Server.
 	InitAbilityActorInfo();
+
+	if (DeathEffect)
+	{
+		AbilitySystemComponent->RemoveActiveGameplayEffectBySourceEffect(
+			DeathEffect, nullptr);
+	}
 	ApplyDefaultAttributes();
 	GrantStartupAbilities();
 }
@@ -146,5 +152,15 @@ void AArenaPlayerCharacter::AbilityInputReleased(FGameplayTag InputTag)
 		{
 			AbilitySystemComponent->AbilitySpecInputReleased(Spec);
 		}
+	}
+}
+
+void AArenaPlayerCharacter::Die(AActor* Killer)
+{
+	Super::Die(Killer);
+
+	if (AArenaGameMode* GM = GetWorld()->GetAuthGameMode<AArenaGameMode>())
+	{
+		GM->RequestRespawn(GetController());
 	}
 }

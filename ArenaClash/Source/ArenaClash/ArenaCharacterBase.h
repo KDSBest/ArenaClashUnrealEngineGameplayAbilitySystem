@@ -22,6 +22,12 @@ public:
 	// IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	// Server only. Called by the attribute set when Health reaches 0.
+	virtual void Die(AActor* Killer);
+
+	UFUNCTION(BlueprintPure, Category = "Arena")
+	bool IsDead() const;
+
 protected:
 	// Connects this Character to its ASC. Each child class
 	// decides where the ASC comes from.
@@ -41,6 +47,12 @@ protected:
 	TArray<TSubclassOf<UArenaGameplayAbility>> StartupAbilities;
 
 	void GrantStartupAbilities();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<UGameplayEffect> DeathEffect;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastHandleDeath();
 
 	// Call after InitAbilityActorInfo on every machine.
 	void BindAttributeCallbacks();

@@ -33,6 +33,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
+	virtual void Die(AActor* Killer) override;
+
 protected:
 	virtual void InitAbilityActorInfo() override;
 

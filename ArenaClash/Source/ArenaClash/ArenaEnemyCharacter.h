@@ -14,6 +14,8 @@ class ARENACLASH_API AArenaEnemyCharacter : public AArenaCharacterBase
 public:
 	AArenaEnemyCharacter();
 
+	virtual void Die(AActor* Killer) override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;

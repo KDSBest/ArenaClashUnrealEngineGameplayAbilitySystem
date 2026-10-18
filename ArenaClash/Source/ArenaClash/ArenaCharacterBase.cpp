@@ -3,6 +3,8 @@
 #include "AbilitySystemComponent.h"
 #include "ArenaAttributeSet.h"
 #include "ArenaGameplayAbility.h"
+#include "ArenaGameplayTags.h"
+#include "Components/CapsuleComponent.h"
 
 AArenaCharacterBase::AArenaCharacterBase()
 {
@@ -114,4 +116,39 @@ void AArenaCharacterBase::GrantStartupAbilities()
 
 		AbilitySystemComponent->GiveAbility(Spec);
 	}
+}
+
+void AArenaCharacterBase::Die(AActor* Killer)
+{
+	if (!HasAuthority() || IsDead())
+	{
+		return;
+	}
+
+	AbilitySystemComponent->CancelAllAbilities();
+
+	if (DeathEffect)
+	{
+		const FGameplayEffectSpecHandle Spec =
+			AbilitySystemComponent->MakeOutgoingSpec(
+				DeathEffect, 1.f, AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
+	}
+
+	MulticastHandleDeath();
+}
+
+bool AArenaCharacterBase::IsDead() const
+{
+	return AbilitySystemComponent &&
+		   AbilitySystemComponent->HasMatchingGameplayTag(ArenaTags::State_Dead);
+}
+
+void AArenaCharacterBase::MulticastHandleDeath_Implementation()
+{
+	GetCharacterMovement()->DisableMovement();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetSimulatePhysics(true);
 }

@@ -27,3 +27,9 @@ void AArenaEnemyCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	BindAttributeCallbacks();
 }
+
+void AArenaEnemyCharacter::Die(AActor* Killer)
+{
+	Super::Die(Killer);
+	SetLifeSpan(5.f);
+}
