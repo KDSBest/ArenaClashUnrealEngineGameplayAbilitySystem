@@ -42,38 +42,38 @@ void AArenaGameMode::RequestRespawn(AController* Controller)
 
 void AArenaGameMode::PostLogin(APlayerController* NewPlayer)
 {
-	Super::PostLogin(NewPlayer);
-
-	AArenaPlayerState* PS = NewPlayer->GetPlayerState<AArenaPlayerState>();
-	if (!PS)
+	// Assign hero and team before Super::PostLogin, because Super spawns
+	// the player's first pawn (HandleStartingNewPlayer).
+	if (AArenaPlayerState* PS = NewPlayer->GetPlayerState<AArenaPlayerState>())
 	{
-		return;
-	}
-
-	if (!PS->HeroData)
-	{
-		PS->SetHeroData(DefaultHero);
-	}
-
-	if (bCoop)
-	{
-		PS->TeamId = 1;
-		return;
-	}
-
-	// PvP: put the player on the smaller team.
-	int32 TeamCount[3] = {0, 0, 0};
-	for (APlayerState* Other : GameState->PlayerArray)
-	{
-		if (const AArenaPlayerState* APS = Cast<AArenaPlayerState>(Other))
+		if (!PS->HeroData)
 		{
-			if (APS != PS && APS->TeamId <= 2)
+			PS->SetHeroData(DefaultHero);
+		}
+
+		if (bCoop)
+		{
+			PS->TeamId = 1;
+		}
+		else
+		{
+			// PvP: put the player on the smaller team.
+			int32 TeamCount[3] = {0, 0, 0};
+			for (APlayerState* Other : GameState->PlayerArray)
 			{
-				TeamCount[APS->TeamId]++;
+				if (const AArenaPlayerState* APS = Cast<AArenaPlayerState>(Other))
+				{
+					if (APS != PS && APS->TeamId <= 2)
+					{
+						TeamCount[APS->TeamId]++;
+					}
+				}
 			}
+			PS->TeamId = (TeamCount[1] <= TeamCount[2]) ? 1 : 2;
 		}
 	}
-	PS->TeamId = (TeamCount[1] <= TeamCount[2]) ? 1 : 2;
+
+	Super::PostLogin(NewPlayer);
 }
 
 AActor* AArenaGameMode::ChoosePlayerStart_Implementation(AController* Player)
