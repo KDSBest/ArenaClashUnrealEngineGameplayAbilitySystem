@@ -21,6 +21,9 @@ public:
 	// Server only: switch the light on or off.
 	void SetLightOn(bool bNewLightOn);
 
+	// Server only.
+	void ToggleLightNow() { SetLightOn(!bLightOn); }
+
 protected:
 	virtual void BeginPlay() override;
 

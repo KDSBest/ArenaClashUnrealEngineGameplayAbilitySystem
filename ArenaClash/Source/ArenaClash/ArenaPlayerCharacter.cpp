@@ -3,6 +3,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
+#include "ArenaNetDemo.h"
+#include "Kismet/GameplayStatics.h"
 
 AArenaPlayerCharacter::AArenaPlayerCharacter()
 {
@@ -36,6 +38,8 @@ void AArenaPlayerCharacter::SetupPlayerInputComponent(
 					  this, &ACharacter::Jump);
 	Input->BindAction(JumpAction, ETriggerEvent::Completed,
 					  this, &ACharacter::StopJumping);
+	Input->BindAction(InteractAction, ETriggerEvent::Started,
+					  this, &AArenaPlayerCharacter::Interact);
 }
 
 void AArenaPlayerCharacter::Move(const FInputActionValue& Value)
@@ -60,4 +64,22 @@ void AArenaPlayerCharacter::Look(const FInputActionValue& Value)
 	const FVector2D Input = Value.Get<FVector2D>();
 	AddControllerYawInput(Input.X);
 	AddControllerPitchInput(Input.Y);
+}
+
+void AArenaPlayerCharacter::Interact()
+{
+	// Runs on the local machine of the player who pressed E.
+	ServerInteract();
+}
+
+void AArenaPlayerCharacter::ServerInteract_Implementation()
+{
+	// Runs on the server.
+	AArenaNetDemo* Demo = Cast<AArenaNetDemo>(
+		UGameplayStatics::GetActorOfClass(this, AArenaNetDemo::StaticClass()));
+
+	if (Demo && FVector::Dist(Demo->GetActorLocation(), GetActorLocation()) < 300.f)
+	{
+		Demo->ToggleLightNow();
+	}
 }

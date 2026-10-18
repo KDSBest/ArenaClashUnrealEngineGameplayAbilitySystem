@@ -28,12 +28,6 @@ void AArenaNetDemo::GetLifetimeReplicatedProps(
 void AArenaNetDemo::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		GetWorldTimerManager().SetTimer(
-			ToggleTimer, this, &AArenaNetDemo::ToggleLight, 2.f, true);
-	}
 }
 
 void AArenaNetDemo::ToggleLight()
