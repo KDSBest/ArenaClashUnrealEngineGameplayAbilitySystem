@@ -121,6 +121,24 @@ void AArenaPlayerCharacter::AbilityInputPressed(FGameplayTag InputTag)
 		return;
 	}
 
+	// While an ability is targeting, primary confirms, secondary cancels.
+	if (AbilitySystemComponent->HasMatchingGameplayTag(
+			FGameplayTag::RequestGameplayTag("State.Targeting")))
+	{
+		if (InputTag.MatchesTagExact(
+				FGameplayTag::RequestGameplayTag("Input.Ability.Primary")))
+		{
+			AbilitySystemComponent->LocalInputConfirm();
+			return;
+		}
+		if (InputTag.MatchesTagExact(
+				FGameplayTag::RequestGameplayTag("Input.Ability.Secondary")))
+		{
+			AbilitySystemComponent->LocalInputCancel();
+			return;
+		}
+	}
+
 	for (FGameplayAbilitySpec& Spec :
 		 AbilitySystemComponent->GetActivatableAbilities())
 	{
