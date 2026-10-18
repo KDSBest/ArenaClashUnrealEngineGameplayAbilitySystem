@@ -1,5 +1,6 @@
 #include "ArenaEnemyCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "ArenaAttributeSet.h"
 
 AArenaEnemyCharacter::AArenaEnemyCharacter()
 {
@@ -7,6 +8,8 @@ AArenaEnemyCharacter::AArenaEnemyCharacter()
 		CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	EnemyAbilitySystemComponent->SetIsReplicated(true);
 	EnemyAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	EnemyAttributeSet = CreateDefaultSubobject<UArenaAttributeSet>(TEXT("AttributeSet"));
 }
 
 void AArenaEnemyCharacter::BeginPlay()

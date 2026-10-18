@@ -4,6 +4,8 @@
 #include "ArenaCharacterBase.h"
 #include "ArenaEnemyCharacter.generated.h"
 
+class UArenaAttributeSet;
+
 UCLASS()
 class ARENACLASH_API AArenaEnemyCharacter : public AArenaCharacterBase
 {
@@ -18,4 +20,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 	TObjectPtr<UAbilitySystemComponent> EnemyAbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<UArenaAttributeSet> EnemyAttributeSet;
 };
