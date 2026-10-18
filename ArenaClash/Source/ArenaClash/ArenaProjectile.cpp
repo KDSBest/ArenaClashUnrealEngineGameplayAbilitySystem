@@ -1,6 +1,7 @@
 #include "ArenaProjectile.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "ArenaAbilityLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -39,6 +40,11 @@ void AArenaProjectile::OnSphereOverlap(UPrimitiveComponent*, AActor* OtherActor,
 	UPrimitiveComponent*, int32, bool, const FHitResult&)
 {
 	if (!OtherActor || OtherActor == GetInstigator())
+	{
+		return;
+	}
+
+	if (UArenaAbilityLibrary::AreFriendly(GetInstigator(), OtherActor))
 	{
 		return;
 	}

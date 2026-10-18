@@ -22,6 +22,9 @@ protected:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
+	// PvP: pick a Player Start tagged Team1 / Team2 for the player's team.
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
 	// true: everyone on team 1 against AI; false: two teams.
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	bool bCoop = true;

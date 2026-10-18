@@ -19,4 +19,11 @@ public:
 									 FGameplayTag CooldownTag,
 									 float& TimeRemaining,
 									 float& Duration);
+
+	// Returns the team of a character, pawn or player state; 0 if unknown.
+	UFUNCTION(BlueprintPure, Category = "Arena|Team")
+	static uint8 GetTeamIdOf(const AActor* Actor);
+
+	UFUNCTION(BlueprintPure, Category = "Arena|Team")
+	static bool AreFriendly(const AActor* A, const AActor* B);
 };

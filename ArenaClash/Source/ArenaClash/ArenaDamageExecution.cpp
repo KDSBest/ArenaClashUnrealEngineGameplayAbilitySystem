@@ -2,6 +2,8 @@
 #include "AbilitySystemComponent.h"
 #include "ArenaAttributeSet.h"
 #include "ArenaGameplayTags.h"
+#include "ArenaAbilityLibrary.h"
+#include "ArenaGameMode.h"
 
 struct FArenaDamageStatics
 {
@@ -32,6 +34,22 @@ void UArenaDamageExecution::Execute_Implementation(
 	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+
+	UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
+	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
+	AActor* SourceActor = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
+	AActor* TargetActor = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
+
+	const AArenaGameMode* GM = TargetActor
+		? TargetActor->GetWorld()->GetAuthGameMode<AArenaGameMode>()
+		: nullptr;
+	const bool bFriendlyFire = GM && GM->IsFriendlyFireEnabled();
+
+	if (!bFriendlyFire && SourceActor != TargetActor &&
+		UArenaAbilityLibrary::AreFriendly(SourceActor, TargetActor))
+	{
+		return; // No damage to teammates.
+	}
 
 	FAggregatorEvaluateParameters EvalParams;
 	EvalParams.SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();

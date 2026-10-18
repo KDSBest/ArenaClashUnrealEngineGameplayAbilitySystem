@@ -3,6 +3,8 @@
 #include "ArenaPlayerController.h"
 #include "ArenaPlayerState.h"
 #include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerStart.h"
+#include "EngineUtils.h"
 
 AArenaGameMode::AArenaGameMode()
 {
@@ -62,4 +64,27 @@ void AArenaGameMode::PostLogin(APlayerController* NewPlayer)
 		}
 	}
 	PS->TeamId = (TeamCount[1] <= TeamCount[2]) ? 1 : 2;
+}
+
+AActor* AArenaGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	const AArenaPlayerState* PS = Player ? Player->GetPlayerState<AArenaPlayerState>() : nullptr;
+	if (!bCoop && PS && PS->TeamId > 0)
+	{
+		const FName TeamTag = *FString::Printf(TEXT("Team%d"), PS->TeamId);
+
+		TArray<APlayerStart*> TeamStarts;
+		for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
+		{
+			if (It->PlayerStartTag == TeamTag)
+			{
+				TeamStarts.Add(*It);
+			}
+		}
+		if (TeamStarts.Num() > 0)
+		{
+			return TeamStarts[FMath::RandRange(0, TeamStarts.Num() - 1)];
+		}
+	}
+	return Super::ChoosePlayerStart_Implementation(Player);
 }

@@ -1,5 +1,7 @@
 #include "ArenaAbilityLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "ArenaCharacterBase.h"
+#include "ArenaPlayerState.h"
 
 bool UArenaAbilityLibrary::GetCooldownRemaining(
 	UAbilitySystemComponent* ASC, FGameplayTag CooldownTag,
@@ -29,4 +31,23 @@ bool UArenaAbilityLibrary::GetCooldownRemaining(
 		}
 	}
 	return TimeRemaining > 0.f;
+}
+
+uint8 UArenaAbilityLibrary::GetTeamIdOf(const AActor* Actor)
+{
+	if (const AArenaCharacterBase* Character = Cast<AArenaCharacterBase>(Actor))
+	{
+		return Character->GetTeamId();
+	}
+	if (const AArenaPlayerState* PS = Cast<AArenaPlayerState>(Actor))
+	{
+		return PS->TeamId;
+	}
+	return 0;
+}
+
+bool UArenaAbilityLibrary::AreFriendly(const AActor* A, const AActor* B)
+{
+	const uint8 TeamA = GetTeamIdOf(A);
+	return TeamA != 0 && TeamA == GetTeamIdOf(B);
 }
