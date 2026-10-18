@@ -4,6 +4,8 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "ArenaNetDemo.h"
+#include "AbilitySystemComponent.h"
+#include "ArenaPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 AArenaPlayerCharacter::AArenaPlayerCharacter()
@@ -16,6 +18,34 @@ AArenaPlayerCharacter::AArenaPlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+}
+
+void AArenaPlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// Server.
+	InitAbilityActorInfo();
+}
+
+void AArenaPlayerCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// Owning client (and every other client that receives the PlayerState).
+	InitAbilityActorInfo();
+}
+
+void AArenaPlayerCharacter::InitAbilityActorInfo()
+{
+	AArenaPlayerState* PS = GetPlayerState<AArenaPlayerState>();
+	if (!PS)
+	{
+		return;
+	}
+
+	AbilitySystemComponent = PS->GetAbilitySystemComponent();
+	AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 }
 
 void AArenaPlayerCharacter::SetupPlayerInputComponent(

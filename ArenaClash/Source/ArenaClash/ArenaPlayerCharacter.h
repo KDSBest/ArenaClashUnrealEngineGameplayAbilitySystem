@@ -17,7 +17,12 @@ class ARENACLASH_API AArenaPlayerCharacter : public AArenaCharacterBase
 public:
 	AArenaPlayerCharacter();
 
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+
 protected:
+	virtual void InitAbilityActorInfo() override;
+
 	virtual void SetupPlayerInputComponent(
 		UInputComponent* PlayerInputComponent) override;
 
