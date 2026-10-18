@@ -17,3 +17,8 @@ AArenaCharacterBase::AArenaCharacterBase()
 	Movement->JumpZVelocity = 700.f;
 	Movement->MaxWalkSpeed = 500.f;
 }
+
+UAbilitySystemComponent* AArenaCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
