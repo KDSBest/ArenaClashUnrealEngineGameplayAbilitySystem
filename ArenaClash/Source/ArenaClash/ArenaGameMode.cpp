@@ -50,6 +50,11 @@ void AArenaGameMode::PostLogin(APlayerController* NewPlayer)
 		return;
 	}
 
+	if (!PS->HeroData)
+	{
+		PS->SetHeroData(DefaultHero);
+	}
+
 	if (bCoop)
 	{
 		PS->TeamId = 1;

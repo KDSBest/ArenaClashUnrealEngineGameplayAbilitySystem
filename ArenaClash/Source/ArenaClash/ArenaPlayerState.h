@@ -41,6 +41,8 @@ public:
 
 	// Server only: switch to a new hero, replacing all hero abilities.
 	void SetHeroData(UArenaHeroData* NewHero);
+
+	virtual void CopyProperties(APlayerState* NewPlayerState) override;
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

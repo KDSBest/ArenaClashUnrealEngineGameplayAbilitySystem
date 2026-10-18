@@ -62,3 +62,14 @@ void AArenaPlayerState::OnRep_HeroData()
 {
 	// Chapter 21: notify the UI that the hero changed.
 }
+
+void AArenaPlayerState::CopyProperties(APlayerState* NewPlayerState)
+{
+	Super::CopyProperties(NewPlayerState);
+
+	if (AArenaPlayerState* NewPS = Cast<AArenaPlayerState>(NewPlayerState))
+	{
+		NewPS->SetHeroData(HeroData);
+		NewPS->TeamId = TeamId;
+	}
+}

@@ -7,6 +7,7 @@
 
 class AArenaCharacterBase;
 class UGameplayEffect;
+class UArenaHeroData;
 
 UCLASS()
 class ARENACLASH_API AArenaGameMode : public AGameModeBase
@@ -41,6 +42,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	bool bFriendlyFire = false;
+
+	// The hero for players who have not chosen one.
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	TObjectPtr<UArenaHeroData> DefaultHero;
 
 	virtual void BeginPlay() override;
 
