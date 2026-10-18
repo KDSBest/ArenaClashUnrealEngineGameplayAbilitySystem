@@ -47,4 +47,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float LifeSeconds = 4.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile",
+			  meta = (Categories = "GameplayCue"))
+	FGameplayTag ImpactCueTag;
 };

@@ -63,5 +63,19 @@ void AArenaProjectile::OnSphereHit(UPrimitiveComponent*, AActor* OtherActor,
 
 void AArenaProjectile::Explode_Implementation(const FVector& Location)
 {
+	if (ImpactCueTag.IsValid())
+	{
+		UAbilitySystemComponent* SourceASC =
+			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetInstigator());
+		if (SourceASC)
+		{
+			FGameplayCueParameters Params;
+			Params.Location = Location;
+			Params.Instigator = GetInstigator();
+			Params.EffectCauser = this;
+			SourceASC->ExecuteGameplayCue(ImpactCueTag, Params);
+		}
+	}
+
 	Destroy();
 }

@@ -134,21 +134,10 @@ void AArenaCharacterBase::Die(AActor* Killer)
 				DeathEffect, 1.f, AbilitySystemComponent->MakeEffectContext());
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
 	}
-
-	MulticastHandleDeath();
 }
 
 bool AArenaCharacterBase::IsDead() const
 {
 	return AbilitySystemComponent &&
 		   AbilitySystemComponent->HasMatchingGameplayTag(ArenaTags::State_Dead);
-}
-
-void AArenaCharacterBase::MulticastHandleDeath_Implementation()
-{
-	GetCharacterMovement()->DisableMovement();
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
-	GetMesh()->SetSimulatePhysics(true);
 }
