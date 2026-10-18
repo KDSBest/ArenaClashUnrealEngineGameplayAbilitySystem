@@ -20,6 +20,8 @@ namespace ArenaTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Data_Damage, "Data.Damage",
 		"Set By Caller: base damage amount.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Data_Cooldown, "Data.Cooldown",
+		"Set By Caller: cooldown duration in seconds.");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Montage_Hit, "Event.Montage.Hit",
 		"Sent by an animation when an attack connects.");

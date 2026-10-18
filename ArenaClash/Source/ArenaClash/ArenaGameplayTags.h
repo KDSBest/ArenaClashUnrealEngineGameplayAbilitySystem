@@ -17,6 +17,7 @@ namespace ArenaTags
 
 	// Set By Caller data
 	ARENACLASH_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Data_Damage);
+	ARENACLASH_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Data_Cooldown);
 
 	// Events
 	ARENACLASH_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Hit);
