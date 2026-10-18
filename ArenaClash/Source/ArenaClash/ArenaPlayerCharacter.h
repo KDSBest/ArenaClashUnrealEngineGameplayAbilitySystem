@@ -40,6 +40,8 @@ public:
 protected:
 	virtual void InitAbilityActorInfo() override;
 
+	virtual TSubclassOf<UGameplayEffect> GetDefaultAttributesEffect() const override;
+
 	virtual void SetupPlayerInputComponent(
 		UInputComponent* PlayerInputComponent) override;
 

@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "ArenaPlayerState.h"
 #include "ArenaGameMode.h"
+#include "ArenaHeroData.h"
 
 AArenaPlayerCharacter::AArenaPlayerCharacter()
 {
@@ -31,7 +32,6 @@ void AArenaPlayerCharacter::PossessedBy(AController* NewController)
 			DeathEffect, nullptr);
 	}
 	ApplyDefaultAttributes();
-	GrantStartupAbilities();
 }
 
 void AArenaPlayerCharacter::OnRep_PlayerState()
@@ -187,4 +187,14 @@ uint8 AArenaPlayerCharacter::GetTeamId() const
 {
 	const AArenaPlayerState* PS = GetPlayerState<AArenaPlayerState>();
 	return PS ? PS->TeamId : 0;
+}
+
+TSubclassOf<UGameplayEffect> AArenaPlayerCharacter::GetDefaultAttributesEffect() const
+{
+	const AArenaPlayerState* PS = GetPlayerState<AArenaPlayerState>();
+	if (PS && PS->HeroData && PS->HeroData->DefaultAttributesEffect)
+	{
+		return PS->HeroData->DefaultAttributesEffect;
+	}
+	return Super::GetDefaultAttributesEffect();
 }

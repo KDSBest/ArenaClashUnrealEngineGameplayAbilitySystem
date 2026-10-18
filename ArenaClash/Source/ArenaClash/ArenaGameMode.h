@@ -30,6 +30,8 @@ protected:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+
 	// PvP: pick a Player Start tagged Team1 / Team2 for the player's team.
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 

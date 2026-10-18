@@ -31,7 +31,7 @@ UAbilitySystemComponent* AArenaCharacterBase::GetAbilitySystemComponent() const
 
 void AArenaCharacterBase::ApplyDefaultAttributes()
 {
-	if (!HasAuthority() || !AbilitySystemComponent || !DefaultAttributesEffect)
+	if (!HasAuthority() || !AbilitySystemComponent || !GetDefaultAttributesEffect())
 	{
 		return;
 	}
@@ -41,7 +41,7 @@ void AArenaCharacterBase::ApplyDefaultAttributes()
 	Context.AddSourceObject(this);
 
 	const FGameplayEffectSpecHandle Spec =
-		AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributesEffect, 1.f, Context);
+		AbilitySystemComponent->MakeOutgoingSpec(GetDefaultAttributesEffect(), 1.f, Context);
 
 	if (Spec.IsValid())
 	{

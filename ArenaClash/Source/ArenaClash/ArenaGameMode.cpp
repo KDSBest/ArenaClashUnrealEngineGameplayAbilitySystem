@@ -7,6 +7,8 @@
 #include "EngineUtils.h"
 #include "ArenaCharacterBase.h"
 #include "ArenaAbilityLibrary.h"
+#include "ArenaHeroData.h"
+#include "ArenaPlayerCharacter.h"
 #include "AbilitySystemComponent.h"
 
 AArenaGameMode::AArenaGameMode()
@@ -235,4 +237,18 @@ void AArenaGameMode::EndMatch()
 	}
 
 	SetMatchPhase(EArenaMatchPhase::Ended, EndDuration);
+}
+
+UClass* AArenaGameMode::GetDefaultPawnClassForController_Implementation(
+	AController* InController)
+{
+	if (const AArenaPlayerState* PS = InController
+			? InController->GetPlayerState<AArenaPlayerState>() : nullptr)
+	{
+		if (PS->HeroData && PS->HeroData->PawnClass)
+		{
+			return PS->HeroData->PawnClass;
+		}
+	}
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }

@@ -1,0 +1,1 @@
+#include "ArenaHeroData.h"

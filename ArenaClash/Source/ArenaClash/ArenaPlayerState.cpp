@@ -2,6 +2,7 @@
 #include "AbilitySystemComponent.h"
 #include "ArenaAttributeSet.h"
 #include "Net/UnrealNetwork.h"
+#include "ArenaHeroData.h"
 
 AArenaPlayerState::AArenaPlayerState()
 {
@@ -30,4 +31,34 @@ void AArenaPlayerState::GetLifetimeReplicatedProps(
 	DOREPLIFETIME(AArenaPlayerState, Kills);
 	DOREPLIFETIME(AArenaPlayerState, Deaths);
 	DOREPLIFETIME(AArenaPlayerState, Assists);
+	DOREPLIFETIME(AArenaPlayerState, HeroData);
+}
+
+void AArenaPlayerState::SetHeroData(UArenaHeroData* NewHero)
+{
+	if (!HasAuthority() || NewHero == HeroData)
+	{
+		return;
+	}
+
+	GrantedHeroHandles.TakeFromAbilitySystem(AbilitySystemComponent);
+
+	HeroData = NewHero;
+
+	if (HeroData)
+	{
+		for (const UArenaAbilitySet* Set : HeroData->AbilitySets)
+		{
+			if (Set)
+			{
+				Set->GiveToAbilitySystem(AbilitySystemComponent, &GrantedHeroHandles);
+			}
+		}
+	}
+	OnRep_HeroData();
+}
+
+void AArenaPlayerState::OnRep_HeroData()
+{
+	// Chapter 21: notify the UI that the hero changed.
 }
