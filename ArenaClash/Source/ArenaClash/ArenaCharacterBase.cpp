@@ -2,6 +2,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
 #include "ArenaAttributeSet.h"
+#include "ArenaGameplayAbility.h"
 
 AArenaCharacterBase::AArenaCharacterBase()
 {
@@ -64,4 +65,34 @@ void AArenaCharacterBase::BindAttributeCallbacks()
 void AArenaCharacterBase::OnMoveSpeedChanged(const FOnAttributeChangeData& Data)
 {
 	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+}
+
+void AArenaCharacterBase::GrantStartupAbilities()
+{
+	if (!HasAuthority() || !AbilitySystemComponent)
+	{
+		return;
+	}
+
+	for (const TSubclassOf<UArenaGameplayAbility>& AbilityClass : StartupAbilities)
+	{
+		if (!AbilityClass)
+		{
+			continue;
+		}
+
+		// Do not grant the same ability twice (e.g. after a respawn).
+		if (AbilitySystemComponent->FindAbilitySpecFromClass(AbilityClass))
+		{
+			continue;
+		}
+
+		FGameplayAbilitySpec Spec(AbilityClass, 1);
+
+		const UArenaGameplayAbility* CDO =
+			AbilityClass->GetDefaultObject<UArenaGameplayAbility>();
+		Spec.GetDynamicSpecSourceTags().AddTag(CDO->InputTag);
+
+		AbilitySystemComponent->GiveAbility(Spec);
+	}
 }

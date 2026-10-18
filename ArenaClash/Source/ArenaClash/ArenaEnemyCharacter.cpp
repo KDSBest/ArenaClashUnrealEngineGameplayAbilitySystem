@@ -18,6 +18,7 @@ void AArenaEnemyCharacter::BeginPlay()
 
 	InitAbilityActorInfo();
 	ApplyDefaultAttributes();
+	GrantStartupAbilities();
 }
 
 void AArenaEnemyCharacter::InitAbilityActorInfo()

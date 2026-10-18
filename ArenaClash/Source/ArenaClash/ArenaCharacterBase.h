@@ -8,6 +8,7 @@
 
 class UAbilitySystemComponent;
 class UGameplayEffect;
+class UArenaGameplayAbility;
 
 UCLASS(Abstract)
 class ARENACLASH_API AArenaCharacterBase : public ACharacter,
@@ -31,6 +32,11 @@ protected:
 	TSubclassOf<UGameplayEffect> DefaultAttributesEffect;
 
 	void ApplyDefaultAttributes();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<UArenaGameplayAbility>> StartupAbilities;
+
+	void GrantStartupAbilities();
 
 	// Call after InitAbilityActorInfo on every machine.
 	void BindAttributeCallbacks();
