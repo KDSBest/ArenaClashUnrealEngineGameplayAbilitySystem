@@ -20,6 +20,7 @@ void UArenaAttributeSet::GetLifetimeReplicatedProps(
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenaAttributeSet, Armor,       COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenaAttributeSet, AttackPower, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenaAttributeSet, MoveSpeed,   COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenaAttributeSet, Shield,      COND_None, REPNOTIFY_Always);
 }
 
 void UArenaAttributeSet::PreAttributeChange(
@@ -35,7 +36,7 @@ void UArenaAttributeSet::PreAttributeChange(
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
 	}
-	else if (Attribute == GetMoveSpeedAttribute())
+	else if (Attribute == GetMoveSpeedAttribute() || Attribute == GetShieldAttribute())
 	{
 		NewValue = FMath::Max(NewValue, 0.f);
 	}
@@ -58,7 +59,20 @@ void UArenaAttributeSet::PostGameplayEffectExecute(
 			return;
 		}
 
-		SetHealth(FMath::Clamp(GetHealth() - Damage, 0.f, GetMaxHealth()));
+		float Remaining = Damage;
+
+		const float CurrentShield = GetShield();
+		if (CurrentShield > 0.f)
+		{
+			const float Absorbed = FMath::Min(CurrentShield, Remaining);
+			SetShield(CurrentShield - Absorbed);
+			Remaining -= Absorbed;
+		}
+
+		if (Remaining > 0.f)
+		{
+			SetHealth(FMath::Clamp(GetHealth() - Remaining, 0.f, GetMaxHealth()));
+		}
 
 		if (GetHealth() <= 0.f)
 		{
@@ -117,4 +131,9 @@ void UArenaAttributeSet::OnRep_AttackPower(const FGameplayAttributeData& OldValu
 void UArenaAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenaAttributeSet, MoveSpeed, OldValue);
+}
+
+void UArenaAttributeSet::OnRep_Shield(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenaAttributeSet, Shield, OldValue);
 }

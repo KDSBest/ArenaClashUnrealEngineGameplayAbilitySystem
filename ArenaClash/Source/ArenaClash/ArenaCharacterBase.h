@@ -56,6 +56,9 @@ protected:
 
 	void OnMoveSpeedChanged(const FOnAttributeChangeData& Data);
 
+	virtual void OnStunTagChanged(const FGameplayTag Tag, int32 NewCount);
+	virtual void OnShieldTagChanged(const FGameplayTag Tag, int32 NewCount);
+
 	// A pointer to the ASC, wherever it lives.
 	UPROPERTY(Transient)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

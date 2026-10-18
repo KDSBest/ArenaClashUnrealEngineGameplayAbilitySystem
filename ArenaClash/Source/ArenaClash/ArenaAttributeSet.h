@@ -57,6 +57,10 @@ public:
 	FGameplayAttributeData MoveSpeed;
 	ATTRIBUTE_ACCESSORS(UArenaAttributeSet, MoveSpeed)
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Shield, Category = "Combat")
+	FGameplayAttributeData Shield;
+	ATTRIBUTE_ACCESSORS(UArenaAttributeSet, Shield)
+
 	// Meta attribute: server only, not replicated.
 	UPROPERTY(BlueprintReadOnly, Category = "Meta")
 	FGameplayAttributeData IncomingDamage;
@@ -70,4 +74,5 @@ protected:
 	UFUNCTION() void OnRep_Armor(const FGameplayAttributeData& OldValue);
 	UFUNCTION() void OnRep_AttackPower(const FGameplayAttributeData& OldValue);
 	UFUNCTION() void OnRep_MoveSpeed(const FGameplayAttributeData& OldValue);
+	UFUNCTION() void OnRep_Shield(const FGameplayAttributeData& OldValue);
 };

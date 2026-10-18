@@ -81,6 +81,18 @@ void AArenaCharacterBase::BindAttributeCallbacks()
 	// Avoid binding twice if InitAbilityActorInfo runs again.
 	Delegate.RemoveAll(this);
 	Delegate.AddUObject(this, &AArenaCharacterBase::OnMoveSpeedChanged);
+
+	FOnGameplayEffectTagCountChanged& StunEvent =
+		AbilitySystemComponent->RegisterGameplayTagEvent(
+			ArenaTags::State_Debuff_Stun, EGameplayTagEventType::NewOrRemoved);
+	StunEvent.RemoveAll(this);
+	StunEvent.AddUObject(this, &AArenaCharacterBase::OnStunTagChanged);
+
+	FOnGameplayEffectTagCountChanged& ShieldEvent =
+		AbilitySystemComponent->RegisterGameplayTagEvent(
+			ArenaTags::State_Buff_Shield, EGameplayTagEventType::NewOrRemoved);
+	ShieldEvent.RemoveAll(this);
+	ShieldEvent.AddUObject(this, &AArenaCharacterBase::OnShieldTagChanged);
 }
 
 void AArenaCharacterBase::OnMoveSpeedChanged(const FOnAttributeChangeData& Data)
@@ -140,4 +152,38 @@ bool AArenaCharacterBase::IsDead() const
 {
 	return AbilitySystemComponent &&
 		   AbilitySystemComponent->HasMatchingGameplayTag(ArenaTags::State_Dead);
+}
+
+void AArenaCharacterBase::OnStunTagChanged(const FGameplayTag Tag, int32 NewCount)
+{
+	if (IsDead())
+	{
+		return;
+	}
+
+	UCharacterMovementComponent* Movement = GetCharacterMovement();
+
+	if (NewCount > 0)
+	{
+		Movement->StopMovementImmediately();
+		Movement->DisableMovement();
+
+		// Stop everything the character is doing.
+		FGameplayTagContainer IgnoreTags;
+		IgnoreTags.AddTag(FGameplayTag::RequestGameplayTag("Ability.Passive"));
+		AbilitySystemComponent->CancelAbilities(nullptr, &IgnoreTags);
+	}
+	else
+	{
+		Movement->SetMovementMode(MOVE_Walking);
+	}
+}
+
+void AArenaCharacterBase::OnShieldTagChanged(const FGameplayTag Tag, int32 NewCount)
+{
+	if (NewCount == 0 && HasAuthority())
+	{
+		AbilitySystemComponent->SetNumericAttributeBase(
+			UArenaAttributeSet::GetShieldAttribute(), 0.f);
+	}
 }
