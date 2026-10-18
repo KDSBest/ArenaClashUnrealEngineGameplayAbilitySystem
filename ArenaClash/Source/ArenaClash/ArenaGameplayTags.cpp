@@ -12,6 +12,8 @@ namespace ArenaTags
 		"Takes fire damage over time.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Buff_Shield, "State.Buff.Shield",
 		"Damage is absorbed by a shield.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_MatchOver, "State.MatchOver",
+		"The match has ended; no abilities can be used.");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Type_Physical, "Damage.Type.Physical",
 		"Physical damage, reduced by armor.");

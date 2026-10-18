@@ -31,6 +31,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Team")
 	virtual uint8 GetTeamId() const { return 0; }
 
+	// Server only. Remembers who damaged this character, and when.
+	void RecordDamageFrom(AActor* DamageInstigator);
+
 protected:
 	// Connects this Character to its ASC. Each child class
 	// decides where the ASC comes from.
@@ -53,6 +56,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<UGameplayEffect> DeathEffect;
+
+	TMap<TWeakObjectPtr<AActor>, double> RecentDamagers;
 
 	// Call after InitAbilityActorInfo on every machine.
 	void BindAttributeCallbacks();

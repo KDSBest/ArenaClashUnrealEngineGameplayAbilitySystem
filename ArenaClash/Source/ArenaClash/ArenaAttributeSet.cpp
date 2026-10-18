@@ -53,6 +53,13 @@ void UArenaAttributeSet::PostGameplayEffectExecute(
 		SetIncomingDamage(0.f);
 
 		UAbilitySystemComponent* TargetASC = &Data.Target;
+
+		if (AArenaCharacterBase* DamagedCharacter = Cast<AArenaCharacterBase>(
+				Data.Target.GetAvatarActor()))
+		{
+			DamagedCharacter->RecordDamageFrom(
+				Data.EffectSpec.GetContext().GetOriginalInstigator());
+		}
 		if (Damage <= 0.f ||
 			TargetASC->HasMatchingGameplayTag(ArenaTags::State_Dead))
 		{

@@ -2,7 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "ArenaGameState.h"
 #include "ArenaGameMode.generated.h"
+
+class AArenaCharacterBase;
+class UGameplayEffect;
 
 UCLASS()
 class ARENACLASH_API AArenaGameMode : public AGameModeBase
@@ -15,6 +19,10 @@ public:
 	void RequestRespawn(AController* Controller);
 
 	bool IsFriendlyFireEnabled() const { return bFriendlyFire; }
+
+	// Server only. Called by a character when it dies.
+	void OnCharacterKilled(AArenaCharacterBase* Victim, AActor* Killer,
+						   const TArray<AActor*>& Assisters);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
@@ -31,4 +39,28 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	bool bFriendlyFire = false;
+
+	virtual void BeginPlay() override;
+
+	void SetMatchPhase(EArenaMatchPhase NewPhase, float Duration);
+	void OnPhaseTimerExpired();
+	void CheckMatchEnd();
+	void EndMatch();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena|Match")
+	float WarmupDuration = 15.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena|Match")
+	float MatchDuration = 300.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena|Match")
+	float EndDuration = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena|Match")
+	int32 ScoreLimit = 20;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena|Match")
+	TSubclassOf<UGameplayEffect> MatchOverEffect;
+
+	FTimerHandle PhaseTimer;
 };

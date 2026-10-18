@@ -5,6 +5,7 @@
 #include "ArenaGameplayAbility.h"
 #include "ArenaGameplayTags.h"
 #include "Components/CapsuleComponent.h"
+#include "ArenaGameMode.h"
 
 AArenaCharacterBase::AArenaCharacterBase()
 {
@@ -146,6 +147,23 @@ void AArenaCharacterBase::Die(AActor* Killer)
 				DeathEffect, 1.f, AbilitySystemComponent->MakeEffectContext());
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
 	}
+
+	if (AArenaGameMode* GM = GetWorld()->GetAuthGameMode<AArenaGameMode>())
+	{
+		TArray<AActor*> Assisters;
+		const double Now = GetWorld()->GetTimeSeconds();
+		for (const auto& Pair : RecentDamagers)
+		{
+			AActor* Damager = Pair.Key.Get();
+			if (Damager && Damager != Killer && Now - Pair.Value < 10.0)
+			{
+				Assisters.Add(Damager);
+			}
+		}
+		RecentDamagers.Reset();
+
+		GM->OnCharacterKilled(this, Killer, Assisters);
+	}
 }
 
 bool AArenaCharacterBase::IsDead() const
@@ -185,5 +203,13 @@ void AArenaCharacterBase::OnShieldTagChanged(const FGameplayTag Tag, int32 NewCo
 	{
 		AbilitySystemComponent->SetNumericAttributeBase(
 			UArenaAttributeSet::GetShieldAttribute(), 0.f);
+	}
+}
+
+void AArenaCharacterBase::RecordDamageFrom(AActor* DamageInstigator)
+{
+	if (DamageInstigator)
+	{
+		RecentDamagers.Add(DamageInstigator, GetWorld()->GetTimeSeconds());
 	}
 }

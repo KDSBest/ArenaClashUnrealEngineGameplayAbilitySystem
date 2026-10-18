@@ -9,6 +9,7 @@ UArenaGameplayAbility::UArenaGameplayAbility()
 	// No ability may be used while dead or stunned.
 	ActivationBlockedTags.AddTag(ArenaTags::State_Dead);
 	ActivationBlockedTags.AddTag(ArenaTags::State_Debuff_Stun);
+	ActivationBlockedTags.AddTag(ArenaTags::State_MatchOver);
 }
 
 const FGameplayTagContainer* UArenaGameplayAbility::GetCooldownTags() const
