@@ -2,12 +2,25 @@
 
 #include "CoreMinimal.h"
 #include "ArenaCharacterBase.h"
+#include "GameplayTagContainer.h"
 #include "ArenaPlayerCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 struct FInputActionValue;
+
+USTRUCT(BlueprintType)
+struct FArenaAbilityInputBinding
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UInputAction> InputAction;
+
+	UPROPERTY(EditDefaultsOnly, meta = (Categories = "Input.Ability"))
+	FGameplayTag InputTag;
+};
 
 UCLASS()
 class ARENACLASH_API AArenaPlayerCharacter : public AArenaCharacterBase
@@ -29,10 +42,6 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
-	void Interact();
-
-	UFUNCTION(Server, Reliable)
-	void ServerInteract();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	TObjectPtr<USpringArmComponent> CameraBoom;
@@ -50,5 +59,8 @@ protected:
 	TObjectPtr<UInputAction> JumpAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> InteractAction;
+	TArray<FArenaAbilityInputBinding> AbilityInputBindings;
+
+	void AbilityInputPressed(FGameplayTag InputTag);
+	void AbilityInputReleased(FGameplayTag InputTag);
 };

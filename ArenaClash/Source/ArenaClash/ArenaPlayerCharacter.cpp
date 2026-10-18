@@ -3,10 +3,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
-#include "ArenaNetDemo.h"
 #include "AbilitySystemComponent.h"
 #include "ArenaPlayerState.h"
-#include "Kismet/GameplayStatics.h"
 
 AArenaPlayerCharacter::AArenaPlayerCharacter()
 {
@@ -71,8 +69,19 @@ void AArenaPlayerCharacter::SetupPlayerInputComponent(
 					  this, &ACharacter::Jump);
 	Input->BindAction(JumpAction, ETriggerEvent::Completed,
 					  this, &ACharacter::StopJumping);
-	Input->BindAction(InteractAction, ETriggerEvent::Started,
-					  this, &AArenaPlayerCharacter::Interact);
+
+	for (const FArenaAbilityInputBinding& Binding : AbilityInputBindings)
+	{
+		if (!Binding.InputAction || !Binding.InputTag.IsValid())
+		{
+			continue;
+		}
+
+		Input->BindAction(Binding.InputAction, ETriggerEvent::Started, this,
+			&AArenaPlayerCharacter::AbilityInputPressed, Binding.InputTag);
+		Input->BindAction(Binding.InputAction, ETriggerEvent::Completed, this,
+			&AArenaPlayerCharacter::AbilityInputReleased, Binding.InputTag);
+	}
 }
 
 void AArenaPlayerCharacter::Move(const FInputActionValue& Value)
@@ -99,20 +108,43 @@ void AArenaPlayerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(Input.Y);
 }
 
-void AArenaPlayerCharacter::Interact()
+void AArenaPlayerCharacter::AbilityInputPressed(FGameplayTag InputTag)
 {
-	// Runs on the local machine of the player who pressed E.
-	ServerInteract();
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	for (FGameplayAbilitySpec& Spec :
+		 AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if (!Spec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
+		{
+			continue;
+		}
+
+		AbilitySystemComponent->AbilitySpecInputPressed(Spec);
+
+		if (!Spec.IsActive())
+		{
+			AbilitySystemComponent->TryActivateAbility(Spec.Handle);
+		}
+	}
 }
 
-void AArenaPlayerCharacter::ServerInteract_Implementation()
+void AArenaPlayerCharacter::AbilityInputReleased(FGameplayTag InputTag)
 {
-	// Runs on the server.
-	AArenaNetDemo* Demo = Cast<AArenaNetDemo>(
-		UGameplayStatics::GetActorOfClass(this, AArenaNetDemo::StaticClass()));
-
-	if (Demo && FVector::Dist(Demo->GetActorLocation(), GetActorLocation()) < 300.f)
+	if (!AbilitySystemComponent)
 	{
-		Demo->ToggleLightNow();
+		return;
+	}
+
+	for (FGameplayAbilitySpec& Spec :
+		 AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
+		{
+			AbilitySystemComponent->AbilitySpecInputReleased(Spec);
+		}
 	}
 }
