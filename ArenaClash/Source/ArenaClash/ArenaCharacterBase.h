@@ -31,6 +31,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<UGameplayEffect> DefaultAttributesEffect;
 
+	// Applied once on the server after the default attributes.
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayEffect>> StartupEffects;
+
 	void ApplyDefaultAttributes();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")

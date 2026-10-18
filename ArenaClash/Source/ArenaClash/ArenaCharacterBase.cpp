@@ -44,6 +44,25 @@ void AArenaCharacterBase::ApplyDefaultAttributes()
 	{
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
 	}
+
+	for (const TSubclassOf<UGameplayEffect>& EffectClass : StartupEffects)
+	{
+		if (!EffectClass)
+		{
+			continue;
+		}
+
+		// The hero's ASC survives respawns, so remove the old instance
+		// before applying the effect again.
+		AbilitySystemComponent->RemoveActiveGameplayEffectBySourceEffect(EffectClass, nullptr);
+
+		const FGameplayEffectSpecHandle StartupSpec =
+			AbilitySystemComponent->MakeOutgoingSpec(EffectClass, 1.f, Context);
+		if (StartupSpec.IsValid())
+		{
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*StartupSpec.Data.Get());
+		}
+	}
 }
 
 void AArenaCharacterBase::BindAttributeCallbacks()
