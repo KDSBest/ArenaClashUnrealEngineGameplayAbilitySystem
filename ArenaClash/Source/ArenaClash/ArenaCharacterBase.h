@@ -28,6 +28,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Arena")
 	bool IsDead() const;
 
+	UFUNCTION(BlueprintPure, Category = "Team")
+	virtual uint8 GetTeamId() const { return 0; }
+
 protected:
 	// Connects this Character to its ASC. Each child class
 	// decides where the ASC comes from.

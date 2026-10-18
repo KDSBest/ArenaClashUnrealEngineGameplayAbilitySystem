@@ -35,6 +35,8 @@ public:
 
 	virtual void Die(AActor* Killer) override;
 
+	virtual uint8 GetTeamId() const override;
+
 protected:
 	virtual void InitAbilityActorInfo() override;
 

@@ -22,6 +22,21 @@ public:
 
 	UArenaAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Team")
+	uint8 TeamId = 0;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Score")
+	int32 Kills = 0;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Score")
+	int32 Deaths = 0;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Score")
+	int32 Assists = 0;
+
+	virtual void GetLifetimeReplicatedProps(
+		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

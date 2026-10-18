@@ -1,6 +1,7 @@
 #include "ArenaPlayerState.h"
 #include "AbilitySystemComponent.h"
 #include "ArenaAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 AArenaPlayerState::AArenaPlayerState()
 {
@@ -18,4 +19,15 @@ AArenaPlayerState::AArenaPlayerState()
 UAbilitySystemComponent* AArenaPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AArenaPlayerState::GetLifetimeReplicatedProps(
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AArenaPlayerState, TeamId);
+	DOREPLIFETIME(AArenaPlayerState, Kills);
+	DOREPLIFETIME(AArenaPlayerState, Deaths);
+	DOREPLIFETIME(AArenaPlayerState, Assists);
 }

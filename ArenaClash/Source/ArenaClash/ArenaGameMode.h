@@ -14,7 +14,18 @@ public:
 
 	void RequestRespawn(AController* Controller);
 
+	bool IsFriendlyFireEnabled() const { return bFriendlyFire; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	float RespawnDelay = 5.f;
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	// true: everyone on team 1 against AI; false: two teams.
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	bool bCoop = true;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	bool bFriendlyFire = false;
 };

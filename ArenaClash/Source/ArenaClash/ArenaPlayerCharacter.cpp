@@ -182,3 +182,9 @@ void AArenaPlayerCharacter::Die(AActor* Killer)
 		GM->RequestRespawn(GetController());
 	}
 }
+
+uint8 AArenaPlayerCharacter::GetTeamId() const
+{
+	const AArenaPlayerState* PS = GetPlayerState<AArenaPlayerState>();
+	return PS ? PS->TeamId : 0;
+}
