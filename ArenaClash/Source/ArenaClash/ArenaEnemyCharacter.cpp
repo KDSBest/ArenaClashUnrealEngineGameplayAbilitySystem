@@ -17,6 +17,7 @@ void AArenaEnemyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	InitAbilityActorInfo();
+	ApplyDefaultAttributes();
 }
 
 void AArenaEnemyCharacter::InitAbilityActorInfo()

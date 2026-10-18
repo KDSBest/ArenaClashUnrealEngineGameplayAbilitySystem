@@ -26,6 +26,7 @@ void AArenaPlayerCharacter::PossessedBy(AController* NewController)
 
 	// Server.
 	InitAbilityActorInfo();
+	ApplyDefaultAttributes();
 }
 
 void AArenaPlayerCharacter::OnRep_PlayerState()

@@ -1,5 +1,6 @@
 #include "ArenaCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "AbilitySystemComponent.h"
 
 AArenaCharacterBase::AArenaCharacterBase()
 {
@@ -21,4 +22,24 @@ AArenaCharacterBase::AArenaCharacterBase()
 UAbilitySystemComponent* AArenaCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AArenaCharacterBase::ApplyDefaultAttributes()
+{
+	if (!HasAuthority() || !AbilitySystemComponent || !DefaultAttributesEffect)
+	{
+		return;
+	}
+
+	FGameplayEffectContextHandle Context =
+		AbilitySystemComponent->MakeEffectContext();
+	Context.AddSourceObject(this);
+
+	const FGameplayEffectSpecHandle Spec =
+		AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributesEffect, 1.f, Context);
+
+	if (Spec.IsValid())
+	{
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
+	}
 }
