@@ -1,6 +1,8 @@
 #include "ArenaPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 
 AArenaPlayerCharacter::AArenaPlayerCharacter()
 {
@@ -12,4 +14,50 @@ AArenaPlayerCharacter::AArenaPlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+}
+
+void AArenaPlayerCharacter::SetupPlayerInputComponent(
+	UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	UEnhancedInputComponent* Input =
+		Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (!Input)
+	{
+		return;
+	}
+
+	Input->BindAction(MoveAction, ETriggerEvent::Triggered,
+					  this, &AArenaPlayerCharacter::Move);
+	Input->BindAction(LookAction, ETriggerEvent::Triggered,
+					  this, &AArenaPlayerCharacter::Look);
+	Input->BindAction(JumpAction, ETriggerEvent::Started,
+					  this, &ACharacter::Jump);
+	Input->BindAction(JumpAction, ETriggerEvent::Completed,
+					  this, &ACharacter::StopJumping);
+}
+
+void AArenaPlayerCharacter::Move(const FInputActionValue& Value)
+{
+	const FVector2D Input = Value.Get<FVector2D>();
+	if (!Controller)
+	{
+		return;
+	}
+
+	// Move relative to where the camera is facing, ignoring pitch.
+	const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
+	const FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(Forward, Input.Y);
+	AddMovementInput(Right, Input.X);
+}
+
+void AArenaPlayerCharacter::Look(const FInputActionValue& Value)
+{
+	const FVector2D Input = Value.Get<FVector2D>();
+	AddControllerYawInput(Input.X);
+	AddControllerPitchInput(Input.Y);
 }
