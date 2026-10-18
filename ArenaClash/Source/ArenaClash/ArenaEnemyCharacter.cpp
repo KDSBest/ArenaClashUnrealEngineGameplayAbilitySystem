@@ -24,4 +24,5 @@ void AArenaEnemyCharacter::InitAbilityActorInfo()
 {
 	AbilitySystemComponent = EnemyAbilitySystemComponent;
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	BindAttributeCallbacks();
 }

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayEffectTypes.h"
 #include "ArenaCharacterBase.generated.h"
 
 class UAbilitySystemComponent;
@@ -30,6 +31,11 @@ protected:
 	TSubclassOf<UGameplayEffect> DefaultAttributesEffect;
 
 	void ApplyDefaultAttributes();
+
+	// Call after InitAbilityActorInfo on every machine.
+	void BindAttributeCallbacks();
+
+	void OnMoveSpeedChanged(const FOnAttributeChangeData& Data);
 
 	// A pointer to the ASC, wherever it lives.
 	UPROPERTY(Transient)

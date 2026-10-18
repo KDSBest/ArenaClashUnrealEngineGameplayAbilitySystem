@@ -47,6 +47,7 @@ void AArenaPlayerCharacter::InitAbilityActorInfo()
 
 	AbilitySystemComponent = PS->GetAbilitySystemComponent();
 	AbilitySystemComponent->InitAbilityActorInfo(PS, this);
+	BindAttributeCallbacks();
 }
 
 void AArenaPlayerCharacter::SetupPlayerInputComponent(

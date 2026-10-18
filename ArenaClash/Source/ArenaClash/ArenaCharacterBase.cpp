@@ -1,6 +1,7 @@
 #include "ArenaCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
+#include "ArenaAttributeSet.h"
 
 AArenaCharacterBase::AArenaCharacterBase()
 {
@@ -42,4 +43,25 @@ void AArenaCharacterBase::ApplyDefaultAttributes()
 	{
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
 	}
+}
+
+void AArenaCharacterBase::BindAttributeCallbacks()
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	FOnGameplayAttributeValueChange& Delegate =
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+			UArenaAttributeSet::GetMoveSpeedAttribute());
+
+	// Avoid binding twice if InitAbilityActorInfo runs again.
+	Delegate.RemoveAll(this);
+	Delegate.AddUObject(this, &AArenaCharacterBase::OnMoveSpeedChanged);
+}
+
+void AArenaCharacterBase::OnMoveSpeedChanged(const FOnAttributeChangeData& Data)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }
