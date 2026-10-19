@@ -62,9 +62,11 @@ void AArenaPlayerState::SetHeroData(UArenaHeroData* NewHero)
 void AArenaPlayerState::OnRep_HeroData()
 {
 	// The new pawn can reach the owning client before the new hero does,
-	// so the HUD was built for the old hero. Rebuild it now.
+	// so the HUD was built for the old hero. Rebuild it now. Skip it while
+	// the controller has no local player or pawn yet (seamless travel);
+	// InitAbilityActorInfo builds the HUD once the pawn arrives.
 	AArenaPlayerController* PC = Cast<AArenaPlayerController>(GetOwningController());
-	if (PC && PC->IsLocalController())
+	if (PC && PC->IsLocalPlayerController() && PC->GetPawn())
 	{
 		PC->OnHeroReady(AbilitySystemComponent);
 	}
