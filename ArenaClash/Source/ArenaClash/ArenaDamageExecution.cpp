@@ -4,6 +4,8 @@
 #include "ArenaGameplayTags.h"
 #include "ArenaAbilityLibrary.h"
 #include "ArenaGameMode.h"
+#include "ArenaClash.h"
+#include "VisualLogger/VisualLogger.h"
 
 struct FArenaDamageStatics
 {
@@ -110,5 +112,13 @@ void UArenaDamageExecution::Execute_Implementation(
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(
 			UArenaAttributeSet::GetIncomingDamageAttribute(),
 			EGameplayModOp::Additive, Damage));
+	}
+
+	UE_VLOG(SourceActor, LogArena, Log, TEXT("Damage %.1f to %s%s"), Damage,
+			*GetNameSafe(TargetActor), bCritical ? TEXT(" (critical)") : TEXT(""));
+	if (TargetActor)
+	{
+		UE_VLOG_LOCATION(SourceActor, LogArena, Log, TargetActor->GetActorLocation(),
+						 30.f, FColor::Red, TEXT("%.0f"), Damage);
 	}
 }

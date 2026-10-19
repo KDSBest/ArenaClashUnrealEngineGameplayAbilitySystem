@@ -6,3 +6,6 @@
 
 /** Main log category used across the project */
 DECLARE_LOG_CATEGORY_EXTERN(LogArenaClash, Log, All);
+
+/** Arena Clash gameplay messages (Chapter 23) */
+DECLARE_LOG_CATEGORY_EXTERN(LogArena, Log, All);

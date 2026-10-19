@@ -12,6 +12,7 @@
 #include "AbilitySystemComponent.h"
 #include "ArenaWaveSpawner.h"
 #include "Kismet/GameplayStatics.h"
+#include "ArenaClash.h"
 
 AArenaGameMode::AArenaGameMode()
 {
@@ -106,6 +107,8 @@ void AArenaGameMode::AssignTeam(APlayerController* PC)
 	{
 		if (!PS->HeroData)
 		{
+			UE_LOG(LogArena, Warning, TEXT("%s: no hero data, using default"),
+				   *GetNameSafe(PS));
 			PS->SetHeroData(DefaultHero);
 		}
 
