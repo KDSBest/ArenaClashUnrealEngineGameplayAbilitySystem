@@ -303,6 +303,18 @@ void AArenaGameMode::EndMatch()
 		}
 	}
 
+	// One comma-separated line per player, for playtest spreadsheets.
+	for (APlayerState* PS : GS->PlayerArray)
+	{
+		if (const AArenaPlayerState* APS = Cast<AArenaPlayerState>(PS))
+		{
+			UE_LOG(LogArena, Log, TEXT("MATCHSTAT,%s,%s,%d,%d,%d,%.0f"),
+				*APS->GetPlayerName(),
+				APS->HeroData ? *APS->HeroData->GetName() : TEXT("None"),
+				APS->Kills, APS->Deaths, APS->Assists, APS->GetScore());
+		}
+	}
+
 	// Stop all abilities for every player.
 	if (MatchOverEffect)
 	{
