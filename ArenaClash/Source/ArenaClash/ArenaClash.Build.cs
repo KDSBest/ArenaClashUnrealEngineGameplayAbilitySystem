@@ -17,6 +17,7 @@ public class ArenaClash : ModuleRules
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
+			"ModelViewViewModel",
 			"AIModule",
 			"StateTreeModule",
 			"GameplayStateTreeModule",
