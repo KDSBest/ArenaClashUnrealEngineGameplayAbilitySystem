@@ -18,6 +18,10 @@ public:
 
 	virtual uint8 GetTeamId() const override { return 255; }
 
+	// Scales the default attributes through curve tables. Set by the wave spawner.
+	UPROPERTY(BlueprintReadWrite, Category = "Enemy", meta = (ExposeOnSpawn = true))
+	int32 EnemyLevel = 1;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;

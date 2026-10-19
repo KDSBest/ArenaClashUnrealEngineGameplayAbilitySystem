@@ -52,7 +52,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayEffect>> StartupEffects;
 
-	void ApplyDefaultAttributes();
+	void ApplyDefaultAttributes(float Level = 1.f);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<UArenaGameplayAbility>> StartupAbilities;

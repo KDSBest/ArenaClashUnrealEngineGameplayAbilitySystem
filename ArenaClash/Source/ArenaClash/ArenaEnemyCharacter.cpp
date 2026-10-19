@@ -17,7 +17,7 @@ void AArenaEnemyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	InitAbilityActorInfo();
-	ApplyDefaultAttributes();
+	ApplyDefaultAttributes(EnemyLevel);
 	GrantStartupAbilities();
 }
 
