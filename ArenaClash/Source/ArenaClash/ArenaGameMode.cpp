@@ -18,6 +18,19 @@ AArenaGameMode::AArenaGameMode()
 	GameStateClass = AArenaGameState::StaticClass();
 	PlayerControllerClass = AArenaPlayerController::StaticClass();
 	PlayerStateClass = AArenaPlayerState::StaticClass();
+	bUseSeamlessTravel = true;
+}
+
+void AArenaGameMode::InitGame(const FString& MapName,
+	const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	const FString Mode = UGameplayStatics::ParseOption(Options, TEXT("Mode"));
+	if (!Mode.IsEmpty())
+	{
+		bCoop = (Mode != TEXT("PvP"));
+	}
 }
 
 void AArenaGameMode::RequestRespawn(AController* Controller)
@@ -72,7 +85,24 @@ void AArenaGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	// Assign hero and team before Super::PostLogin, because Super spawns
 	// the player's first pawn (HandleStartingNewPlayer).
-	if (AArenaPlayerState* PS = NewPlayer->GetPlayerState<AArenaPlayerState>())
+	AssignTeam(NewPlayer);
+
+	Super::PostLogin(NewPlayer);
+}
+
+void AArenaGameMode::InitSeamlessTravelPlayer(AController* NewController)
+{
+	Super::InitSeamlessTravelPlayer(NewController);
+
+	if (APlayerController* PC = Cast<APlayerController>(NewController))
+	{
+		AssignTeam(PC);
+	}
+}
+
+void AArenaGameMode::AssignTeam(APlayerController* PC)
+{
+	if (AArenaPlayerState* PS = PC->GetPlayerState<AArenaPlayerState>())
 	{
 		if (!PS->HeroData)
 		{
@@ -100,8 +130,6 @@ void AArenaGameMode::PostLogin(APlayerController* NewPlayer)
 			PS->TeamId = (TeamCount[1] <= TeamCount[2]) ? 1 : 2;
 		}
 	}
-
-	Super::PostLogin(NewPlayer);
 }
 
 AActor* AArenaGameMode::ChoosePlayerStart_Implementation(AController* Player)
@@ -229,7 +257,7 @@ void AArenaGameMode::OnPhaseTimerExpired()
 		break;
 
 	case EArenaMatchPhase::Ended:
-		// Chapter 22: travel back to the lobby.
+		GetWorld()->ServerTravel(TEXT("/Game/ArenaClash/Maps/L_Lobby?listen"));
 		break;
 	}
 }

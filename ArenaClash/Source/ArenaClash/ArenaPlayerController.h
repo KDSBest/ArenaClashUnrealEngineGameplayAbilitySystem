@@ -32,6 +32,18 @@ protected:
 	void ShowDamageNumber(AActor* Target, float Amount, bool bCritical);
 	virtual void BeginPlay() override;
 
+	// After seamless travel, a listen server's new controller receives its
+	// local player after BeginPlay. Local setup waits for both.
+	virtual void ReceivedPlayer() override;
+	void TryLocalSetup();
+
+	// Called once on the owning machine when the controller is ready for
+	// local UI (menus, lobby).
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnLocalControllerReady();
+
+	bool bLocalSetupDone = false;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 };

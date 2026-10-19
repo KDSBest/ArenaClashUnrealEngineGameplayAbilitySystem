@@ -5,17 +5,29 @@
 #include "ArenaGameState.h"
 #include "ArenaHeroData.h"
 #include "GameFramework/GameModeBase.h"
+#include "ArenaLobbyGameMode.h"
 
 void AArenaPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	TryLocalSetup();
+}
 
+void AArenaPlayerController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+	TryLocalSetup();
+}
+
+void AArenaPlayerController::TryLocalSetup()
+{
 	// Input only matters on the machine of the player who owns
 	// this controller.
-	if (!IsLocalController())
+	if (bLocalSetupDone || !HasActorBegunPlay() || !IsLocalController())
 	{
 		return;
 	}
+	bLocalSetupDone = true;
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
@@ -23,15 +35,22 @@ void AArenaPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+
+	OnLocalControllerReady();
 }
 
 void AArenaPlayerController::ServerSelectHero_Implementation(UArenaHeroData* Hero)
 {
 	AArenaPlayerState* PS = GetPlayerState<AArenaPlayerState>();
 	AArenaGameState* GS = GetWorld()->GetGameState<AArenaGameState>();
-	if (!PS || !Hero || !GS || GS->MatchPhase != EArenaMatchPhase::Warmup)
+	const bool bInLobby = GetWorld()->GetAuthGameMode<AArenaLobbyGameMode>() != nullptr;
+	if (!PS || !Hero)
 	{
-		return; // Heroes can only be changed during warmup.
+		return;
+	}
+	if (!bInLobby && (!GS || GS->MatchPhase != EArenaMatchPhase::Warmup))
+	{
+		return; // Heroes can only be changed in the lobby or during warmup.
 	}
 
 	PS->SetHeroData(Hero);

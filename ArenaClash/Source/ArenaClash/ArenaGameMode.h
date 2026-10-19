@@ -32,7 +32,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Arena")
 	float RespawnDelay = 5.f;
 
+	virtual void InitGame(const FString& MapName, const FString& Options,
+						  FString& ErrorMessage) override;
+
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	// Seamless travel skips PostLogin. InitSeamlessTravelPlayer runs after the
+	// new PlayerState has its copied data and before the pawn is spawned.
+	virtual void InitSeamlessTravelPlayer(AController* NewController) override;
+
+	// Default hero and team for a new or travelling player.
+	void AssignTeam(APlayerController* PC);
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
