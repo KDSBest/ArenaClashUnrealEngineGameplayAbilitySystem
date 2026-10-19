@@ -3,6 +3,7 @@
 #include "ArenaAttributeSet.h"
 #include "Net/UnrealNetwork.h"
 #include "ArenaHeroData.h"
+#include "ArenaPlayerController.h"
 
 AArenaPlayerState::AArenaPlayerState()
 {
@@ -60,7 +61,13 @@ void AArenaPlayerState::SetHeroData(UArenaHeroData* NewHero)
 
 void AArenaPlayerState::OnRep_HeroData()
 {
-	// Chapter 21: notify the UI that the hero changed.
+	// The new pawn can reach the owning client before the new hero does,
+	// so the HUD was built for the old hero. Rebuild it now.
+	AArenaPlayerController* PC = Cast<AArenaPlayerController>(GetOwningController());
+	if (PC && PC->IsLocalController())
+	{
+		PC->OnHeroReady(AbilitySystemComponent);
+	}
 }
 
 void AArenaPlayerState::CopyProperties(APlayerState* NewPlayerState)
