@@ -6,6 +6,7 @@
 
 class UInputMappingContext;
 class UArenaHeroData;
+class UAbilitySystemComponent;
 
 UCLASS()
 class ARENACLASH_API AArenaPlayerController : public APlayerController
@@ -15,6 +16,11 @@ class ARENACLASH_API AArenaPlayerController : public APlayerController
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Hero")
 	void ServerSelectHero(UArenaHeroData* Hero);
+
+	// Called on the owning client when the hero's ASC is ready
+	// (after spawn and after every respawn). Builds/updates the HUD.
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnHeroReady(UAbilitySystemComponent* AbilitySystem);
 
 protected:
 	virtual void BeginPlay() override;

@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "ArenaPlayerState.h"
 #include "ArenaGameMode.h"
+#include "ArenaPlayerController.h"
 #include "ArenaHeroData.h"
 
 AArenaPlayerCharacter::AArenaPlayerCharacter()
@@ -53,6 +54,14 @@ void AArenaPlayerCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = PS->GetAbilitySystemComponent();
 	AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 	BindAttributeCallbacks();
+
+	if (IsLocallyControlled())
+	{
+		if (AArenaPlayerController* PC = Cast<AArenaPlayerController>(GetController()))
+		{
+			PC->OnHeroReady(AbilitySystemComponent);
+		}
+	}
 }
 
 void AArenaPlayerCharacter::SetupPlayerInputComponent(
