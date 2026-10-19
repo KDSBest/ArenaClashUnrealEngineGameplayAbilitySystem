@@ -6,6 +6,7 @@
 #include "ArenaAbilityLibrary.generated.h"
 
 class UAbilitySystemComponent;
+class UArenaGameplayAbility;
 
 UCLASS()
 class ARENACLASH_API UArenaAbilityLibrary : public UBlueprintFunctionLibrary
@@ -23,6 +24,10 @@ public:
 	// Returns the team of a character, pawn or player state; 0 if unknown.
 	UFUNCTION(BlueprintPure, Category = "Arena|Team")
 	static uint8 GetTeamIdOf(const AActor* Actor);
+
+	UFUNCTION(BlueprintCallable, Category = "Arena|Abilities")
+	static const UArenaGameplayAbility* FindAbilityForInput(
+		UAbilitySystemComponent* ASC, FGameplayTag InputTag);
 
 	UFUNCTION(BlueprintPure, Category = "Arena|Team")
 	static bool AreFriendly(const AActor* A, const AActor* B);

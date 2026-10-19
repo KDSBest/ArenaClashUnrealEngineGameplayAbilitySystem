@@ -26,6 +26,7 @@ void AArenaEnemyCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = EnemyAbilitySystemComponent;
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	BindAttributeCallbacks();
+	OnAbilitySystemReady(AbilitySystemComponent);
 }
 
 void AArenaEnemyCharacter::Die(AActor* Killer)

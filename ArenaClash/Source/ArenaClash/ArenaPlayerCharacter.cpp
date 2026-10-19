@@ -54,6 +54,7 @@ void AArenaPlayerCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = PS->GetAbilitySystemComponent();
 	AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 	BindAttributeCallbacks();
+	OnAbilitySystemReady(AbilitySystemComponent);
 
 	if (IsLocallyControlled())
 	{

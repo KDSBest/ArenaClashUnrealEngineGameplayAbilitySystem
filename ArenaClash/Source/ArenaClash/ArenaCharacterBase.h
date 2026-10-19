@@ -33,6 +33,11 @@ public:
 
 	FArenaOnDied OnDied;
 
+	// Called on every machine once this character's ASC is ready.
+	// Blueprints use it to set up overhead health bars.
+	UFUNCTION(BlueprintImplementableEvent, Category = "Arena")
+	void OnAbilitySystemReady(UAbilitySystemComponent* AbilitySystem);
+
 	UFUNCTION(BlueprintPure, Category = "Team")
 	virtual uint8 GetTeamId() const { return 0; }
 

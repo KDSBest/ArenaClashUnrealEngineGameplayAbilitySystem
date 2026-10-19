@@ -22,7 +22,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
 	void OnHeroReady(UAbilitySystemComponent* AbilitySystem);
 
+	UFUNCTION(Client, Unreliable)
+	void ClientShowDamageNumber(AActor* Target, float Amount, bool bCritical);
+
+
 protected:
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void ShowDamageNumber(AActor* Target, float Amount, bool bCritical);
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")

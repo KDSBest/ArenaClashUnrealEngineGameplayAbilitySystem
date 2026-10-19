@@ -66,6 +66,15 @@ public:
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UArenaAttributeSet, IncomingDamage)
 
+	// Meta attribute: set to 1 by the damage execution for a critical hit.
+	UPROPERTY(BlueprintReadOnly, Category = "Meta")
+	FGameplayAttributeData IncomingCrit;
+	ATTRIBUTE_ACCESSORS(UArenaAttributeSet, IncomingCrit)
+
+private:
+	// Set when IncomingCrit arrives, read by the next IncomingDamage.
+	bool bPendingCrit = false;
+
 protected:
 	UFUNCTION() void OnRep_Health(const FGameplayAttributeData& OldValue);
 	UFUNCTION() void OnRep_MaxHealth(const FGameplayAttributeData& OldValue);

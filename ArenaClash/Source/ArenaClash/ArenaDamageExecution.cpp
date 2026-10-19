@@ -90,9 +90,19 @@ void UArenaDamageExecution::Execute_Implementation(
 	}
 
 	// 10% chance of a critical hit for 150% damage.
+	bool bCritical = false;
 	if (FMath::FRand() < 0.1f)
 	{
 		Damage *= 1.5f;
+		bCritical = true;
+	}
+
+	if (Damage > 0.f && bCritical)
+	{
+		// Must come before the damage: modifiers are processed in order.
+		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(
+			UArenaAttributeSet::GetIncomingCritAttribute(),
+			EGameplayModOp::Additive, 1.f));
 	}
 
 	if (Damage > 0.f)

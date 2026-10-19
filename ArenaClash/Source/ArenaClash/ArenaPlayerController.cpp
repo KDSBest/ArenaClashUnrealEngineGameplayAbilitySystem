@@ -44,3 +44,9 @@ void AArenaPlayerController::ServerSelectHero_Implementation(UArenaHeroData* Her
 	}
 	GetWorld()->GetAuthGameMode()->RestartPlayer(this);
 }
+
+void AArenaPlayerController::ClientShowDamageNumber_Implementation(
+	AActor* Target, float Amount, bool bCritical)
+{
+	ShowDamageNumber(Target, Amount, bCritical);
+}

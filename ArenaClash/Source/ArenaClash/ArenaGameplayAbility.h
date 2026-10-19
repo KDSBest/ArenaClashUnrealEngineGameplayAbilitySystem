@@ -4,6 +4,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "ArenaGameplayAbility.generated.h"
 
+class UTexture2D;
+
 UCLASS(Abstract)
 class ARENACLASH_API UArenaGameplayAbility : public UGameplayAbility
 {
@@ -15,6 +17,12 @@ public:
 	// The input that activates this ability, e.g. Input.Ability.Primary.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	FGameplayTag InputTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TObjectPtr<UTexture2D> Icon;
+
+	UFUNCTION(BlueprintPure, Category = "UI")
+	FGameplayTagContainer GetCooldownTagsForUI() const { return CooldownTags; }
 
 	virtual const FGameplayTagContainer* GetCooldownTags() const override;
 

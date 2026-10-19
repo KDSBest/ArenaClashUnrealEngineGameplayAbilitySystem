@@ -3,6 +3,8 @@
 #include "Net/UnrealNetwork.h"
 #include "ArenaCharacterBase.h"
 #include "ArenaGameplayTags.h"
+#include "ArenaPlayerController.h"
+#include "GameFramework/PlayerState.h"
 
 UArenaAttributeSet::UArenaAttributeSet()
 {
@@ -47,10 +49,19 @@ void UArenaAttributeSet::PostGameplayEffectExecute(
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	if (Data.EvaluatedData.Attribute == GetIncomingCritAttribute())
+	{
+		bPendingCrit = GetIncomingCrit() > 0.f;
+		SetIncomingCrit(0.f);
+		return;
+	}
+
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		const float Damage = GetIncomingDamage();
 		SetIncomingDamage(0.f);
+		const bool bWasCrit = bPendingCrit;
+		bPendingCrit = false;
 
 		UAbilitySystemComponent* TargetASC = &Data.Target;
 
@@ -79,6 +90,17 @@ void UArenaAttributeSet::PostGameplayEffectExecute(
 		if (Remaining > 0.f)
 		{
 			SetHealth(FMath::Clamp(GetHealth() - Remaining, 0.f, GetMaxHealth()));
+		}
+
+		AActor* Instigator = Data.EffectSpec.GetContext().GetOriginalInstigator();
+		if (APlayerState* PS = Cast<APlayerState>(Instigator))
+		{
+			if (AArenaPlayerController* PC =
+					Cast<AArenaPlayerController>(PS->GetOwningController()))
+			{
+				PC->ClientShowDamageNumber(
+					TargetASC->GetAvatarActor(), Damage, bWasCrit);
+			}
 		}
 
 		if (GetHealth() <= 0.f)
