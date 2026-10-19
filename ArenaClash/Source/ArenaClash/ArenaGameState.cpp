@@ -10,6 +10,7 @@ void AArenaGameState::GetLifetimeReplicatedProps(
 	DOREPLIFETIME(AArenaGameState, PhaseEndTime);
 	DOREPLIFETIME(AArenaGameState, TeamScores);
 	DOREPLIFETIME(AArenaGameState, WinningTeam);
+	DOREPLIFETIME(AArenaGameState, CurrentWave);
 }
 
 void AArenaGameState::AddTeamScore(uint8 TeamId, int32 Amount)

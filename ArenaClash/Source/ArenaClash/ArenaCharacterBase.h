@@ -10,6 +10,9 @@ class UAbilitySystemComponent;
 class UGameplayEffect;
 class UArenaGameplayAbility;
 
+class AArenaCharacterBase;
+DECLARE_MULTICAST_DELEGATE_OneParam(FArenaOnDied, AArenaCharacterBase*);
+
 UCLASS(Abstract)
 class ARENACLASH_API AArenaCharacterBase : public ACharacter,
 										  public IAbilitySystemInterface
@@ -27,6 +30,8 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Arena")
 	bool IsDead() const;
+
+	FArenaOnDied OnDied;
 
 	UFUNCTION(BlueprintPure, Category = "Team")
 	virtual uint8 GetTeamId() const { return 0; }

@@ -34,6 +34,10 @@ public:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	uint8 WinningTeam = 0;
 
+	// Co-op: the wave that is currently running (1-based).
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	int32 CurrentWave = 0;
+
 	void AddTeamScore(uint8 TeamId, int32 Amount);
 
 	UFUNCTION(BlueprintPure)

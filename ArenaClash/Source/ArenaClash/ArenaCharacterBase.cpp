@@ -164,6 +164,8 @@ void AArenaCharacterBase::Die(AActor* Killer)
 
 		GM->OnCharacterKilled(this, Killer, Assisters);
 	}
+
+	OnDied.Broadcast(this);
 }
 
 bool AArenaCharacterBase::IsDead() const

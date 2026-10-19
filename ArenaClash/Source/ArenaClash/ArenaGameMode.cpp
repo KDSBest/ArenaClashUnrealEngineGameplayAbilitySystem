@@ -10,6 +10,8 @@
 #include "ArenaHeroData.h"
 #include "ArenaPlayerCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "ArenaWaveSpawner.h"
+#include "Kismet/GameplayStatics.h"
 
 AArenaGameMode::AArenaGameMode()
 {
@@ -22,6 +24,32 @@ void AArenaGameMode::RequestRespawn(AController* Controller)
 {
 	if (!Controller)
 	{
+		return;
+	}
+
+	if (bCoop)
+	{
+		// Co-op: dead heroes wait for the end of the wave.
+		PendingRespawns.AddUnique(Controller);
+
+		bool bAnyHeroAlive = false;
+		for (APlayerState* PS : GameState->PlayerArray)
+		{
+			const AController* C = PS ? PS->GetOwningController() : nullptr;
+			const AArenaCharacterBase* Hero = C ? Cast<AArenaCharacterBase>(C->GetPawn()) : nullptr;
+			if (Hero && !Hero->IsDead())
+			{
+				bAnyHeroAlive = true;
+				break;
+			}
+		}
+
+		AArenaGameState* GS = GetGameState<AArenaGameState>();
+		if (!bAnyHeroAlive && GS->MatchPhase == EArenaMatchPhase::InProgress)
+		{
+			EndMatch();
+			GS->WinningTeam = 255; // the enemies win
+		}
 		return;
 	}
 
@@ -177,10 +205,22 @@ void AArenaGameMode::OnPhaseTimerExpired()
 			}
 		}
 		SetMatchPhase(EArenaMatchPhase::InProgress, MatchDuration);
+
+		if (bCoop)
+		{
+			if (AArenaWaveSpawner* Spawner = Cast<AArenaWaveSpawner>(
+					UGameplayStatics::GetActorOfClass(this, AArenaWaveSpawner::StaticClass())))
+			{
+				Spawner->StartWaves();
+			}
+		}
 		break;
 
 	case EArenaMatchPhase::InProgress:
-		EndMatch();   // time is up
+		if (!bCoop)
+		{
+			EndMatch();   // time is up
+		}
 		break;
 
 	case EArenaMatchPhase::Ended:
@@ -256,4 +296,41 @@ UClass* AArenaGameMode::GetDefaultPawnClassForController_Implementation(
 		}
 	}
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
+}
+
+void AArenaGameMode::OnWaveCleared(int32 Wave)
+{
+	for (const TWeakObjectPtr<AController>& Controller : PendingRespawns)
+	{
+		if (AController* C = Controller.Get())
+		{
+			if (APawn* DeadPawn = C->GetPawn())
+			{
+				C->UnPossess();
+				DeadPawn->SetLifeSpan(2.f);
+			}
+			RestartPlayer(C);
+		}
+	}
+	PendingRespawns.Reset();
+
+	// Reward the survivors.
+	if (WaveClearedEffect)
+	{
+		for (APlayerState* PS : GameState->PlayerArray)
+		{
+			if (AArenaPlayerState* APS = Cast<AArenaPlayerState>(PS))
+			{
+				UAbilitySystemComponent* ASC = APS->GetAbilitySystemComponent();
+				ASC->ApplyGameplayEffectSpecToSelf(*ASC->MakeOutgoingSpec(
+					WaveClearedEffect, 1.f, ASC->MakeEffectContext()).Data.Get());
+			}
+		}
+	}
+}
+
+void AArenaGameMode::OnAllWavesCleared()
+{
+	EndMatch();
+	GetGameState<AArenaGameState>()->WinningTeam = 1;
 }

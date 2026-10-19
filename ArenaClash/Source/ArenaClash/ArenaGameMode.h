@@ -19,6 +19,9 @@ public:
 
 	void RequestRespawn(AController* Controller);
 
+	void OnWaveCleared(int32 Wave);
+	void OnAllWavesCleared();
+
 	bool IsFriendlyFireEnabled() const { return bFriendlyFire; }
 
 	// Server only. Called by a character when it dies.
@@ -70,4 +73,10 @@ protected:
 	TSubclassOf<UGameplayEffect> MatchOverEffect;
 
 	FTimerHandle PhaseTimer;
+
+	TArray<TWeakObjectPtr<AController>> PendingRespawns;
+
+	// Co-op: heals every living hero a little at the end of each wave.
+	UPROPERTY(EditDefaultsOnly, Category = "Arena|Coop")
+	TSubclassOf<UGameplayEffect> WaveClearedEffect;
 };
