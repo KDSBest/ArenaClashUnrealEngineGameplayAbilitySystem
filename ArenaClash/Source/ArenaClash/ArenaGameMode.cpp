@@ -137,6 +137,11 @@ void AArenaGameMode::OnCharacterKilled(AArenaCharacterBase* Victim,
 	}
 
 	AArenaPlayerState* VictimPS = Victim->GetPlayerState<AArenaPlayerState>();
+
+	{
+		const FString VictimName = VictimPS ? VictimPS->GetPlayerName() : Victim->GetName();
+		GS->MulticastKillFeed(Cast<APlayerState>(Killer), VictimName, Victim->GetTeamId());
+	}
 	if (VictimPS)
 	{
 		VictimPS->Deaths++;

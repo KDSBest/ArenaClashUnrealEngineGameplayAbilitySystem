@@ -4,6 +4,9 @@
 #include "GameFramework/GameStateBase.h"
 #include "ArenaGameState.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FArenaKillFeedEvent,
+	APlayerState*, Killer, const FString&, VictimName, uint8, VictimTeam);
+
 UENUM(BlueprintType)
 enum class EArenaMatchPhase : uint8
 {
@@ -39,6 +42,13 @@ public:
 	int32 CurrentWave = 0;
 
 	void AddTeamScore(uint8 TeamId, int32 Amount);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastKillFeed(APlayerState* Killer, const FString& VictimName,
+						   uint8 VictimTeam);
+
+	UPROPERTY(BlueprintAssignable)
+	FArenaKillFeedEvent OnKillFeed;
 
 	UFUNCTION(BlueprintPure)
 	float GetPhaseTimeRemaining() const;

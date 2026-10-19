@@ -10,6 +10,10 @@ AArenaEnemyCharacter::AArenaEnemyCharacter()
 	EnemyAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	EnemyAttributeSet = CreateDefaultSubobject<UArenaAttributeSet>(TEXT("AttributeSet"));
+
+	// Set here, not only in BeginPlay: on clients the attribute OnReps can
+	// arrive before BeginPlay and need GetAbilitySystemComponent().
+	AbilitySystemComponent = EnemyAbilitySystemComponent;
 }
 
 void AArenaEnemyCharacter::BeginPlay()

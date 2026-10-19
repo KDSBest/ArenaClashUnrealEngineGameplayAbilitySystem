@@ -31,3 +31,9 @@ void AArenaGameState::OnRep_MatchPhase()
 {
 	// The HUD reads MatchPhase directly; Chapter 21 reacts to changes here.
 }
+
+void AArenaGameState::MulticastKillFeed_Implementation(APlayerState* Killer,
+	const FString& VictimName, uint8 VictimTeam)
+{
+	OnKillFeed.Broadcast(Killer, VictimName, VictimTeam);
+}
